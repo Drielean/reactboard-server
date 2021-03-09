@@ -9,6 +9,25 @@ const schema = {
   owner: { type: String, required: true },
   title: { type: String, required: true },
   description: { type: String, maxChar: 1000, required: true },
+  priority: {
+    type: Object,
+    required: true,
+    default: 1,
+    enum: [
+      {
+        level: 1,
+        info: "Alta",
+      },
+      {
+        level: 2,
+        info: "Média",
+      },
+      {
+        level: 3,
+        info: "Baixa",
+      },
+    ],
+  },
   tags: [{ type: String }],
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
 };

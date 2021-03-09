@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Card = require("../models/Card.model");
+const Column = require("../models/Column.model");
 
 // Crud (Create): Rota para criar um novo Card
 router.post("/card", async (req, res) => {
@@ -10,10 +11,17 @@ router.post("/card", async (req, res) => {
     // O banco responde com o documento recém-criado
     console.log(newCard);
 
+    const updatedColumnCardsIDs = await Column.updateOne(
+      { _id: newCard.columnId },
+      { $push: { cards: newCard._id } }
+    );
+    console.log(updatedColumnCardsIDs);
+
     // Respondemos a requisição com o documento recém-criado e status 201 (Created)
     return res.status(201).json(newCard);
   } catch (err) {
     // Caso algo dê errado, respondemos com o status 500 (Internal Server Error) e o motivo do erro
+    console.log(err);
     return res.status(500).json({ msg: err });
   }
 });
