@@ -14,6 +14,7 @@ app.use(express.json());
 
 // Cross Origin Resource Sharing é um mecanismo de defesa padrão implementado pela maioria dos servidores web para bloquear requisições HTTP de outros domínios. Podemos liberar domínios diferentes manualmente usando o pacote cors do NPM
 app.use(cors({ origin: process.env.CLIENT_URL }));
+require("./config/passport.config")(app);
 
 // Importar a configuração do banco de dados (mongoose)
 const db = require("./config/db.config");
@@ -35,6 +36,9 @@ app.use("/", cardRouter);
 
 const commentRouter = require("./routes/comment.routes");
 app.use("/", commentRouter);
+
+const userRouter = require("./routes/user.routers");
+app.use("/", userRouter);
 
 // Subir o servidor web para escutar requisições
 app.listen(Number(process.env.PORT), () =>

@@ -1,60 +1,73 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 
 const Board = require("../models/Board.model");
 
 // Crud (Create): Rota para criar uma nova Board
-router.post("/board", async (req, res) => {
-  try {
-    const newBoard = await Board.create({ ...req.body });
-    // O banco responde com o documento recém-criado
-    console.log(newBoard);
+router.post(
+  "/board",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const newBoard = await Board.create({ ...req.body });
+      // O banco responde com o documento recém-criado
+      console.log(newBoard);
 
-    // Respondemos a requisição com o documento recém-criado e status 201 (Created)
-    return res.status(201).json(newBoard);
-  } catch (err) {
-    // Caso algo dê errado, respondemos com o status 500 (Internal Server Error) e o motivo do erro
-    return res.status(500).json({ msg: err });
+      // Respondemos a requisição com o documento recém-criado e status 201 (Created)
+      return res.status(201).json(newBoard);
+    } catch (err) {
+      // Caso algo dê errado, respondemos com o status 500 (Internal Server Error) e o motivo do erro
+      return res.status(500).json({ msg: err });
+    }
   }
-});
+);
 
 // cRud (Read): Rota para listar todos as boards
-router.get("/board", async (req, res) => {
-  try {
-    // O find() sem filtros traz todos os documentos da collection
-    const boards = await Board.find();
-    console.log(boards);
+router.get(
+  "/board",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      // O find() sem filtros traz todos os documentos da collection
+      const boards = await Board.find();
+      console.log(boards);
 
-    // O status 200 é um status genérico de sucesso (OK)
-    return res.status(200).json(boards);
-  } catch (err) {
-    return res.status(500).json({ msg: err });
+      // O status 200 é um status genérico de sucesso (OK)
+      return res.status(200).json(boards);
+    } catch (err) {
+      return res.status(500).json({ msg: err });
+    }
   }
-});
+);
 
 // cRud (Read): Rota para trazer uma board específico
-router.get("/board/:id", async (req, res) => {
-  try {
-    // O findOne() traz a primeira ocorrência do resultado da consulta
-    const board = await Board.findOne({ _id: req.params.id }).populate({
-      path: "columns",
-      populate: {
-        path: "cards",
-      },
-    });
-    console.log(board);
+router.get(
+  "/board/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      // O findOne() traz a primeira ocorrência do resultado da consulta
+      const board = await Board.findOne({ _id: req.params.id }).populate({
+        path: "columns",
+        populate: {
+          path: "cards",
+        },
+      });
+      console.log(board);
 
-    // Se o findOne() retornar null, ou seja, não encontrar a board no banco, retornamos um 404 dizendo que não foi encontrada
-    if (!board) {
-      return res.status(404).json({ msg: "Board not found" });
+      // Se o findOne() retornar null, ou seja, não encontrar a board no banco, retornamos um 404 dizendo que não foi encontrada
+      if (!board) {
+        return res.status(404).json({ msg: "Board not found" });
+      }
+
+      // O status 200 é um status genérico de sucesso (OK)
+      return res.status(200).json(board);
+    } catch (err) {
+      return res.status(500).json({ msg: err });
     }
-
-    // O status 200 é um status genérico de sucesso (OK)
-    return res.status(200).json(board);
-  } catch (err) {
-    return res.status(500).json({ msg: err });
   }
-});
+);
 
 // // crUd (Update): Rota para substituir um pet específico pelo enviado no corpo da requisição
 // router.put("/pet/:id", async (req, res) => {

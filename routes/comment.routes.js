@@ -1,30 +1,35 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 
 const Comment = require("../models/Comment.model");
 const Card = require("../models/Card.model");
 
 // Crud (Create): Rota para criar um novo Comment
-router.post("/comment", async (req, res) => {
-  try {
-    const newComment = await Comment.create({ ...req.body });
-    // O banco responde com o documento recém-criado
-    console.log(newComment);
+router.post(
+  "/comment",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const newComment = await Comment.create({ ...req.body });
+      // O banco responde com o documento recém-criado
+      console.log(newComment);
 
-    const updatedCardsCommentsIDs = await Card.updateOne(
-      { _id: newComment.cardId },
-      { $push: { comments: { $each: [newComment._id], $position: 0 } } }
-    );
-    console.log(updatedCardsCommentsIDs);
+      const updatedCardsCommentsIDs = await Card.updateOne(
+        { _id: newComment.cardId },
+        { $push: { comments: { $each: [newComment._id], $position: 0 } } }
+      );
+      console.log(updatedCardsCommentsIDs);
 
-    // Respondemos a requisição com o documento recém-criado e status 201 (Created)
-    return res.status(201).json(newComment);
-  } catch (err) {
-    // Caso algo dê errado, respondemos com o status 500 (Internal Server Error) e o motivo do erro
-    console.log(err);
-    return res.status(500).json({ msg: err });
+      // Respondemos a requisição com o documento recém-criado e status 201 (Created)
+      return res.status(201).json(newComment);
+    } catch (err) {
+      // Caso algo dê errado, respondemos com o status 500 (Internal Server Error) e o motivo do erro
+      console.log(err);
+      return res.status(500).json({ msg: err });
+    }
   }
-});
+);
 
 // // cRud (Read): Rota para listar todos os pets do usuário logado
 // router.get(
