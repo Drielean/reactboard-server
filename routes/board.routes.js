@@ -19,10 +19,10 @@ router.post("/board", async (req, res) => {
 });
 
 // cRud (Read): Rota para trazer uma board específico
-router.get("/board/:title", async (req, res) => {
+router.get("/board/:key", async (req, res) => {
   try {
     // O findOne() traz a primeira ocorrência do resultado da consulta
-    const board = await Board.findOne({ title: req.params.title }).populate({
+    const board = await Board.findOne({ key: req.params.key }).populate({
       path: "columns",
       populate: {
         path: "cards",

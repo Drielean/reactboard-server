@@ -13,7 +13,8 @@ router.post("/card", async (req, res) => {
 
     const updatedColumnCardsIDs = await Column.updateOne(
       { _id: newCard.columnId },
-      { $push: { cards: newCard._id } }
+      // { $push: { cards: newCard._id } }
+      { $push: { cards: { $each: [newCard._id], $position: 0 } } }
     );
     console.log(updatedColumnCardsIDs);
 
