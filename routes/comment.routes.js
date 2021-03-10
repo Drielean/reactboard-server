@@ -1,60 +1,67 @@
 const express = require("express");
 const router = express.Router();
 
-const Board = require("../models/Board.model");
+const Comment = require("../models/Comment.model");
+const Card = require("../models/Card.model");
 
-// Crud (Create): Rota para criar uma nova Board
-router.post("/board", async (req, res) => {
+// Crud (Create): Rota para criar um novo Comment
+router.post("/comment", async (req, res) => {
   try {
-    const newBoard = await Board.create({ ...req.body });
+    const newComment = await Comment.create({ ...req.body });
     // O banco responde com o documento recém-criado
-    console.log(newBoard);
+    console.log(newComment);
+
+    const updatedCardsCommentsIDs = await Card.updateOne(
+      { _id: newComment.cardId },
+      { $push: { comments: { $each: [newComment._id], $position: 0 } } }
+    );
+    console.log(updatedCardsCommentsIDs);
 
     // Respondemos a requisição com o documento recém-criado e status 201 (Created)
-    return res.status(201).json(newBoard);
+    return res.status(201).json(newComment);
   } catch (err) {
     // Caso algo dê errado, respondemos com o status 500 (Internal Server Error) e o motivo do erro
+    console.log(err);
     return res.status(500).json({ msg: err });
   }
 });
 
-// cRud (Read): Rota para listar todos as boards
-router.get("/board", async (req, res) => {
-  try {
-    // O find() sem filtros traz todos os documentos da collection
-    const boards = await Board.find();
-    console.log(boards);
+// // cRud (Read): Rota para listar todos os pets do usuário logado
+// router.get(
+//   "/pet",
+//   passport.authenticate("jwt", { session: false }),
+//   async (req, res) => {
+//     try {
+//       // O find() sem filtros traz todos os documentos da collection
+//       const pets = await Pet.find({ ownerId: req.user._id });
+//       console.log(pets);
 
-    // O status 200 é um status genérico de sucesso (OK)
-    return res.status(200).json(boards);
-  } catch (err) {
-    return res.status(500).json({ msg: err });
-  }
-});
+//       // O status 200 é um status genérico de sucesso (OK)
+//       return res.status(200).json(pets);
+//     } catch (err) {
+//       return res.status(500).json({ msg: err });
+//     }
+//   }
+// );
 
-// cRud (Read): Rota para trazer uma board específico
-router.get("/board/:id", async (req, res) => {
-  try {
-    // O findOne() traz a primeira ocorrência do resultado da consulta
-    const board = await Board.findOne({ _id: req.params.id }).populate({
-      path: "columns",
-      populate: {
-        path: "cards",
-      },
-    });
-    console.log(board);
+// cRud (Read): Rota para trazer um card específico
+// router.get("/card/:id", async (req, res) => {
+//   try {
+//     // O findOne() traz a primeira ocorrência do resultado da consulta
+//     const card = await Card.findOne({ _id: req.params.id });
+//     console.log(card);
 
-    // Se o findOne() retornar null, ou seja, não encontrar a board no banco, retornamos um 404 dizendo que não foi encontrada
-    if (!board) {
-      return res.status(404).json({ msg: "Board not found" });
-    }
+//     // Se o findOne() retornar null, ou seja, não encontrar o card no banco, retornamos um 404 dizendo que não encontramos o pet
+//     if (!card) {
+//       return res.status(404).json({ msg: "Card not found" });
+//     }
 
-    // O status 200 é um status genérico de sucesso (OK)
-    return res.status(200).json(board);
-  } catch (err) {
-    return res.status(500).json({ msg: err });
-  }
-});
+//     // O status 200 é um status genérico de sucesso (OK)
+//     return res.status(200).json(card);
+//   } catch (err) {
+//     return res.status(500).json({ msg: err });
+//   }
+// });
 
 // // crUd (Update): Rota para substituir um pet específico pelo enviado no corpo da requisição
 // router.put("/pet/:id", async (req, res) => {

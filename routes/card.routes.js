@@ -45,26 +45,26 @@ router.post("/card", async (req, res) => {
 //   }
 // );
 
-// // cRud (Read): Rota para trazer um pet específico
-// router.get("/pet/:id", async (req, res) => {
-//   try {
-//     // O findOne() traz a primeira ocorrência do resultado da consulta
-//     const pet = await Pet.findOne({ _id: req.params.id }).populate(
-//       "taggedInPosts"
-//     );
-//     console.log(pet);
+// cRud (Read): Rota para trazer um card específico
+router.get("/card/:id", async (req, res) => {
+  try {
+    // O findOne() traz a primeira ocorrência do resultado da consulta
+    const card = await Card.findOne({ _id: req.params.id }).populate({
+      path: "comments",
+    });
+    console.log(card);
 
-//     // Se o findOne() retornar null, ou seja, não encontrar o pet no banco, retornamos um 404 dizendo que não encontramos o pet
-//     if (!pet) {
-//       return res.status(404).json({ msg: "Pet not found" });
-//     }
+    // Se o findOne() retornar null, ou seja, não encontrar o card no banco, retornamos um 404 dizendo que não encontramos o pet
+    if (!card) {
+      return res.status(404).json({ msg: "Card not found" });
+    }
 
-//     // O status 200 é um status genérico de sucesso (OK)
-//     return res.status(200).json(pet);
-//   } catch (err) {
-//     return res.status(500).json({ msg: err });
-//   }
-// });
+    // O status 200 é um status genérico de sucesso (OK)
+    return res.status(200).json(card);
+  } catch (err) {
+    return res.status(500).json({ msg: err });
+  }
+});
 
 // // crUd (Update): Rota para substituir um pet específico pelo enviado no corpo da requisição
 // router.put("/pet/:id", async (req, res) => {

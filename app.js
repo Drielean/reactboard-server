@@ -33,6 +33,9 @@ app.use("/", columnRouter);
 const cardRouter = require("./routes/card.routes");
 app.use("/", cardRouter);
 
+const commentRouter = require("./routes/comment.routes");
+app.use("/", commentRouter);
+
 // Subir o servidor web para escutar requisições
 app.listen(Number(process.env.PORT), () =>
   console.log(`Server up and running at port ${process.env.PORT}`)
