@@ -4,6 +4,7 @@ const schema = {
   columnId: { type: mongoose.Schema.Types.ObjectId, ref: "Column" },
   created: { type: Date, default: Date.now },
   deadline: { type: Date },
+  creatorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   creator: { type: String, required: true },
   owner: { type: String, required: true },
   title: { type: String, required: true },

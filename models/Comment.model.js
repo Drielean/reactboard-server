@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 
 const schema = {
   created: { type: Date, default: Date.now },
+  updated: { type: Date },
+  creatorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   creator: { type: String, required: true },
   text: { type: String, maxChar: 500, required: true },
   cardId: { type: mongoose.Schema.Types.ObjectId, ref: "Card" },

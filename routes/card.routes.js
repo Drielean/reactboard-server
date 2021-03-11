@@ -4,6 +4,7 @@ const passport = require("passport");
 
 const Card = require("../models/Card.model");
 const Column = require("../models/Column.model");
+const User = require("../models/User.model");
 
 // Crud (Create): Rota para criar um novo Card
 router.post(
@@ -20,7 +21,16 @@ router.post(
         // { $push: { cards: newCard._id } }
         { $push: { cards: { $each: [newCard._id], $position: 0 } } }
       );
+
       console.log(updatedColumnCardsIDs);
+
+      const updatedUserCardsIDs = await User.updateOne(
+        { _id: newCard.creatorId },
+        // { $push: { cards: newCard._id } }
+        { $push: { cards: { $each: [newCard._id], $position: 0 } } }
+      );
+
+      console.log(updatedUserCardsIDs);
 
       // Respondemos a requisição com o documento recém-criado e status 201 (Created)
       return res.status(201).json(newCard);
