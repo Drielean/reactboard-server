@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 
 const Board = require("../models/Board.model");
+const Column = require("../models/Column.model");
 
 // Crud (Create): Rota para criar uma nova Board
 router.post(
@@ -11,6 +12,33 @@ router.post(
   async (req, res) => {
     try {
       const newBoard = await Board.create({ ...req.body });
+
+      const columnToDo = await Column.create({
+        key: "fazer",
+        boardId: newBoard._id,
+        title: "Fazer",
+        cards: [],
+      });
+      const columnDoing = await Column.create({
+        key: "fazendo",
+        boardId: newBoard._id,
+        title: "Fazendo",
+        cards: [],
+      });
+      const columnDone = await Column.create({
+        key: "feito",
+        boardId: newBoard._id,
+        title: "Feito",
+        cards: [],
+      });
+
+      await Board.updateOne(
+        { _id: newBoard._id },
+        {
+          $push: { columns: [columnToDo._id, columnDoing._id, columnDone._id] },
+        }
+      );
+
       // O banco responde com o documento recém-criado
       console.log(newBoard);
 
@@ -30,7 +58,7 @@ router.get(
   async (req, res) => {
     try {
       // O find() sem filtros traz todos os documentos da collection
-      const boards = await Board.find();
+      const boards = await Board.find().sort({ created: -1 });
       console.log(boards);
 
       // O status 200 é um status genérico de sucesso (OK)
@@ -68,67 +96,6 @@ router.get(
     }
   }
 );
-
-// // crUd (Update): Rota para substituir um pet específico pelo enviado no corpo da requisição
-// router.put("/pet/:id", async (req, res) => {
-//   try {
-//     // O findOneAndUpdate() vai buscar um documento que atenda à consulta do primeiro parâmetro, e, caso encontre, atualizar com o conteúdo do segundo parâmetro. Ao final da atualização, retornará o objeto atualizado
-//     const updatedPet = await Pet.findOneAndReplace(
-//       { _id: req.params.id },
-//       req.body,
-//       { new: true }
-//     );
-
-//     // Se o findOne() retornar null, ou seja, não encontrar o pet no banco, retornamos um 404 dizendo que não encontramos o pet
-//     if (!updatedPet) {
-//       return res.status(404).json({ msg: "Pet not found" });
-//     }
-
-//     return res.status(200).json(updatedPet);
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ msg: err });
-//   }
-// });
-
-// // crUd (Update): Rota para atualizar um pet específico
-// router.patch("/pet/:id", async (req, res) => {
-//   try {
-//     // O findOneAndUpdate() vai buscar um documento que atenda à consulta do primeiro parâmetro, e, caso encontre, atualizar com o conteúdo do segundo parâmetro. Ao final da atualização, retornará o objeto atualizado
-//     const updatedPet = await Pet.findOneAndUpdate(
-//       { _id: req.params.id },
-//       { $set: req.body },
-//       { new: true }
-//     );
-
-//     // Se o findOne() retornar null, ou seja, não encontrar o pet no banco, retornamos um 404 dizendo que não encontramos o pet
-//     if (!updatedPet) {
-//       return res.status(404).json({ msg: "Pet not found" });
-//     }
-
-//     return res.status(200).json(updatedPet);
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ msg: err });
-//   }
-// });
-
-// // cruD (Delete): Apaga o pet especificado do banco
-
-// router.delete("/pet/:id", async (req, res) => {
-//   try {
-//     const deleted = await Pet.deleteOne({ _id: req.params.id });
-
-//     if (!deleted) {
-//       return res.status(404).json({ msg: "Pet not found" });
-//     }
-
-//     return res.status(200).json({});
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ msg: err });
-//   }
-// });
 
 // Exportar nossa instância de roteador configurada
 module.exports = router;
