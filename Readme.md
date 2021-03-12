@@ -13,7 +13,7 @@ Developed by students of Web Development, where they put their acquired skills i
 
 ## Signup now!
 
-- Enter the App and start managing your tasks now [Click Here](https://reactboard-front.netlify.app](https://reactboard-front.netlify.app)!
+- Enter the App and start managing your tasks now [Click Here](https://reactboard-front.netlify.app)!
 
 ## Contribution
 
